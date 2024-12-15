@@ -13,7 +13,7 @@
 5. 如果此时 HoshinoBot 仍在运行，重启 HoshinoBot 以使模块生效
 
 ## 指令
-help 排卡/q/queue 查看帮助
+help 排卡/q/queue |查看帮助
 
 j |查看所有机厅的排卡人数
 
