@@ -260,9 +260,8 @@ async def arcade_query_multiple(bot: NoneBot, ev: CQEvent):
         await bot.finish(ev, '没有已订阅的机厅，请使用 订阅机厅 <店名> 来订阅目标机厅', at_sender=True)
 
 
-@sv_queue.on_suffix(['有多少人', '有几人', '有几卡', '多少人', '多少卡', '几人', 'jr', '几卡'])
+@sv_queue.on_suffix(['有多少人', '有几人', '有几卡', '多少人', '多少卡', '几人', '几卡', '几'])
 async def arcade_query_person(bot: NoneBot, ev: CQEvent):
-    gid = ev.group_id
     arg = ev.message.extract_plain_text().strip().lower()
     result = None
     arcades: List[Dict] = json.load(open(arcades_json, 'r', encoding='utf-8'))
