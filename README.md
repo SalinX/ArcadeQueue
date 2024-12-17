@@ -6,7 +6,7 @@
 
 注意：如果已安装 [maimaiDX](https://github.com/Yuri-YuzuChaN/maimaiDX) 模块，可以跳过第3,4步
 
-于此同时请禁用 maimaiDXArcade 模块，以防出现冲突
+与此同时请禁用 maimaiDXArcade 模块，以防出现冲突
 
 1. clone本项目至 HoshinoBot 模块目录 `modules` 下
 
@@ -57,6 +57,8 @@
 
 2. 支持直接读取本地机厅信息，并可通过配置文件控制是否在线获取机厅信息
 
+3. 支持对机均人数的计算方式进行修改，可选择计算mai/chu/全部机台的机均人数
+
 ## 如果需要使用本地机厅信息
 
 1. 修改模块根目录下的config.json，设置 `"use-online-database"` 的值为 `False`
@@ -64,6 +66,16 @@
 2. 打开模块根目录内的 `static/arcades-local.json` 文件，按需修改内容后将该文件重命名为 `arcades.json` 即可
 
    *建议对修改后的文件进行备份，以免使用在线数据时文件内容被覆盖
+
+## 如果需要修改机均人数的计算方式
+
+    修改模块根目录下的config.json，修改 `"avg-person-calc"` 的值
+
+    `mai`: 机均人数将以舞萌DX的机台数量进行计算
+
+    `chu`: 机均人数将以中二节奏的机台数量进行计算
+
+    `all` 或留空: 机均人数将以舞萌DX和中二节奏的机台总数进行计算
 
 ## License
 

@@ -9,6 +9,8 @@ from pydantic import BaseModel
 from .. import arcades_json, config_json, log
 from .tool import writefile, openfile
 
+config = json.load(open(config_json, 'r', encoding='utf-8'))
+
 
 class Arcade(BaseModel):
     
@@ -27,7 +29,6 @@ class Arcade(BaseModel):
 
 
 class ArcadeList(List[Arcade]):
-
 
     async def save_arcade(self):
         return await writefile(arcades_json, [_.model_dump() for _ in self])
@@ -105,12 +106,18 @@ class ArcadeList(List[Arcade]):
     def arcade_to_msg(cls, arcade_list: List[Arcade]) -> List[str]:
         """机厅人数格式化"""
         result = []
+        avg_person_calc = config.get('avg-person-calc', '').strip().lower()
         for arcade in arcade_list:
             arcadename = ''.join(arcade.alias)
             msg = f'''{arcadename} 当前 {arcade.person} 人'''
-            totalnum = arcade.mainum + arcade.chuninum
-            if totalnum > 1:
-                msg += f''' 机均 {arcade.person // totalnum} 人'''
+            if avg_person_calc == 'mai':
+                avgnum = arcade.mainum
+            elif avg_person_calc in ['chu', 'chuni']:
+                avgnum = arcade.chuninum
+            else:
+                avgnum = arcade.mainum + arcade.chuninum
+            if avgnum > 1:
+                msg += f''' 机均 {arcade.person // avgnum} 人'''
             if arcade.by:
                 msg += f'\n[{arcade.time}]'
             result.append(msg.strip())
@@ -138,9 +145,8 @@ class ArcadeData:
 
 arcade = ArcadeData()
 
-async def load_config() -> bool:
+async def load_download_config() -> bool:
     try:
-        config = json.load(open(config_json, 'r', encoding='utf-8'))
         save = config.get('use-online-database', '').strip().lower()
         if save in ['true', '']:
             return True
@@ -154,7 +160,7 @@ async def load_config() -> bool:
 
 
 async def download_arcade_info() -> ArcadeList:
-    save = await load_config()
+    save = await load_download_config()
     try:
         async with aiohttp.request('GET', 'http://wc.wahlap.net/maidx/rest/location', timeout=aiohttp.ClientTimeout(total=30)) as req:
             if req.status == 200:

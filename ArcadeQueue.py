@@ -7,8 +7,9 @@ from hoshino.typing import CQEvent, MessageSegment
 
 from .lib.image import image_to_base64, text_to_image
 from .lib.arcade import *
-from . import log
+from . import log, config_json
 
+config = json.load(open(config_json, 'r', encoding='utf-8'))
 
 sv_help= """
 排卡指令帮助
@@ -265,6 +266,7 @@ async def arcade_query_person(bot: NoneBot, ev: CQEvent):
     arg = ev.message.extract_plain_text().strip().lower()
     result = None
     arcades: List[Dict] = json.load(open(arcades_json, 'r', encoding='utf-8'))
+    avg_person_calc = config.get('avg-person-calc', '').strip().lower()
     if arg:
         for a in arcades:
             if arg == a['name']:
@@ -277,9 +279,14 @@ async def arcade_query_person(bot: NoneBot, ev: CQEvent):
             return log.info('无效查询：机厅输入错误')
     if result:
         msg = f'{arg}有{result["person"]}人 '
-        totalnum = result['mainum'] + result['chuninum']
-        if totalnum > 1:
-            msg += f'机均{result["person"] // totalnum }人'
+        if avg_person_calc == 'mai':
+            avgnum = result['mainum']
+        elif avg_person_calc in ['chu', 'chuni']:
+            avgnum = result['chuninum']
+        else:
+            avgnum = result['mainum'] + result['chuninum']
+        if avgnum > 1:
+            msg += f'机均{result["person"] // avgnum}人'
         if result['by']:
             msg += f'\n由 {result["by"]} 更新于\n{result["time"]}'
         await bot.send(ev, msg.strip(), at_sender=True)
